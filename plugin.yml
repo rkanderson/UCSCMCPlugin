@@ -1,0 +1,14 @@
+name: UCSCPlugin
+main: mainPkg.UCSCPluginMain
+description: "The best plugin."
+version: 1.0
+commands:
+  test1:
+    description: "Test something"
+    usage: "/test1"
+  test2:
+    usage: "/test2"
+  test3:
+    usage: "/test3"
+  test4:
+    usage: "/test4"
