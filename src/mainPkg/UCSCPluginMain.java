@@ -14,14 +14,17 @@ public class UCSCPluginMain extends JavaPlugin {
         config.options().copyDefaults(true);
         saveConfig();
         
+        //playerDataHelper = new PlayerDataHelper();
+        
     	this.getCommand("test1").setExecutor(new CommandTest());
     	this.getCommand("test2").setExecutor(new CommandTest());
     	this.getCommand("test3").setExecutor(new CommandTest());
     	this.getCommand("test4").setExecutor(new CommandTest());
 
     	
-        getServer().getPluginManager().registerEvents(new MyListener(), this);
+        getServer().getPluginManager().registerEvents(new MyListener(this), this);
     }
+    
     // Fired when plugin is disabled.
     @Override
     public void onDisable() {

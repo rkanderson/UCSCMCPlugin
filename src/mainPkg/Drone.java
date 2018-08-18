@@ -6,6 +6,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public class Drone {
+	// A special helper for building things.
+	
 	Location loc;
 	World world;
 	

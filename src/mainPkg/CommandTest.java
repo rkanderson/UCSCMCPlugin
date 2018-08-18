@@ -13,7 +13,7 @@ public class CommandTest implements CommandExecutor {
 		if(label.equals("test1")) {
 			sender.sendMessage("Yay you tested something!!!");
 		} else if(label.equals("test2")) {
-			
+			sender.sendMessage("Hello from the other side!");
 		} else if(label.equals("test3")) {
 			
 		} else if(label.equals("test4")) {
