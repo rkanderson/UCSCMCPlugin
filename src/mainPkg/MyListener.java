@@ -80,7 +80,10 @@ public class MyListener implements Listener {
 			if(nEvent.getDamager() instanceof Player)
 			{
 				Player p = (Player)nEvent.getDamager();
-				if(plugin.playerDataHelper.getInt(p.getName(), "college") == 9) {
+				if(plugin.playerDataHelper.getInt(p.getName(), "college") == 9 && Math.random()>0.6 &&
+						(p.getItemInHand().getType() == Material.STONE_AXE ||
+						p.getItemInHand().getType() == Material.IRON_AXE ||
+						p.getItemInHand().getType() == Material.DIAMOND_AXE)) {
 					// OAKES
 					p.sendMessage(ChatColor.BOLD+"OAKES!");
 					e.getLocation().getWorld().strikeLightning(e.getLocation());
