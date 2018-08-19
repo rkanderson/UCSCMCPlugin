@@ -82,9 +82,13 @@ public class MyListener implements Listener {
 				Player p = (Player)nEvent.getDamager();
 				if(plugin.playerDataHelper.getInt(p.getName(), "college") == 9) {
 					// OAKES
-					p.sendMessage(ChatColor.BOLD+"oAKES!");
+					p.sendMessage(ChatColor.BOLD+"OAKES!");
 					e.getLocation().getWorld().strikeLightning(e.getLocation());
+					
+					// Move the drone down to temporarily make a grass block if needed.
+					// After the tree is grown, the block is replaced to be what it originally was.
 					Drone d = new Drone(e.getLocation());
+					d.setBlockAtLoc(Material.AIR);
 					d.changeY(-1);
 					World world = e.getWorld();
 					Block base = world.getBlockAt(d.loc);
@@ -93,8 +97,17 @@ public class MyListener implements Listener {
 						baseType = base.getType();
 						base.setType(Material.GRASS);
 					}
-					e.getLocation().getWorld().generateTree(e.getLocation(), TreeType.DARK_OAK);
+					world.generateTree(e.getLocation(), TreeType.TREE);
 					if(baseType != null) d.setBlockAtLoc(baseType);
+					
+					// Light all the nearby mobs on fire.
+					for(Entity ent: world.getNearbyEntities(e.getLocation(), 7, 5, 5)) {
+						if(ent.getType() != EntityType.PLAYER && 
+								ent.getType() != EntityType.WOLF && 
+								ent.getType() != EntityType.OCELOT) {
+							ent.setFireTicks(200);
+						}
+					}
 				}
             }
          }
