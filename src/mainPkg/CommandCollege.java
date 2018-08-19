@@ -74,6 +74,17 @@ public class CommandCollege implements CommandExecutor {
 			player.sendMessage(ChatColor.AQUA+"Choose wisely!");
 			return true;
 			
+		} else if(args[0].equals("pack")){
+			//TODO check for a cooldown timer.
+			int collegeIndex = plugin.playerDataHelper.getInt(player.getName(), "college");
+			if(collegeIndex == -1) {
+				player.sendMessage(ChatColor.AQUA+"You don't seem to be affiliated with any college yet. Use /college choose first.");
+				return false;
+			} else {
+				ItemStack[] pack = PackCreator.getPack(collegeIndex);
+				for(ItemStack stack: pack) player.getInventory().addItem(stack);
+				player.sendMessage(ChatColor.AQUA+"ENjoy!");
+			}
 		} else {
 			return false;
 		}
