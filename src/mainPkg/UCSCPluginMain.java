@@ -45,18 +45,19 @@ public class UCSCPluginMain extends JavaPlugin {
     // E.g. effects different colleges or classes require.
     private void updateStates(){
     	
+    	// TODO add potion effects for all the colleges!!!
     	for(Player p: getServer().getOnlinePlayers()){
     		int collegeIndex = playerDataHelper.getInt(p.getName(), "college");
     		if(collegeIndex==0) { //Stevenson
-    			p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10, 1));
-    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 10, 1));
+    			p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 1));
+    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 200, 1));
     		} else if(collegeIndex==1) { //Cowell
-    			p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10, 1));
-    			p.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 10, 1));
+    			p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 200, 1));
+    			p.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 200, 1));
     		} else if(collegeIndex==2) { //Crown
-    			p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 10, 1));
+    			p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 200, 1));
     		} else if(collegeIndex == 4 || collegeIndex == 5) { // 9/10
-    			p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 10, 1));
+    			p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 200, 1));
     		}
     	}
     }

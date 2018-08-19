@@ -1,5 +1,9 @@
 package mainPkg;
 
+import org.bukkit.CropState;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -9,15 +13,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.SlimeSplitEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.material.Crops;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class MyListener implements Listener {
 	// For a list of all events, go to https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/class-use/Event.html
 	
-	JavaPlugin plugin;
+	UCSCPluginMain plugin;
 	
-	public MyListener(JavaPlugin p) {
+	public MyListener(UCSCPluginMain p) {
 		plugin = p;
 	}
 	
@@ -34,6 +43,28 @@ public class MyListener implements Listener {
         }  
         
     }
+	
+	@EventHandler
+	public void onPlayerClick(PlayerInteractEvent e) {
+		Player p = e.getPlayer();
+		int collegeIndex = plugin.playerDataHelper.getInt(p.getName(), "college");
+		
+		// Rachel Carson makes crops grow if you right click on seeds with a stick in your hand.
+		// TODO add limit + cooldown
+		if(collegeIndex == 8 && p.getItemInHand().getType() == Material.STICK) {
+			EquipmentSlot slot = e.getHand();
+			if(slot.equals(EquipmentSlot.HAND)) {
+				Block target = p.getTargetBlock(null, 5);
+				if(target.getType() == Material.CROPS) {
+					p.sendMessage(ChatColor.AQUA+"Let it Grow!");
+					BlockState bs = target.getState();
+					bs.setData(new Crops(CropState.RIPE));
+					bs.update();
+				}
+			}
+			
+		}
+	}
 	
 //	@EventHandler
 //	public void onSlimeSplit(SlimeSplitEvent event) {
