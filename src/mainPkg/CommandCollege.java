@@ -1,9 +1,11 @@
 package mainPkg;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.gson.JsonPrimitive;
@@ -12,8 +14,21 @@ import net.md_5.bungee.api.ChatColor;
 
 public class CommandCollege implements CommandExecutor {
 	private UCSCPluginMain plugin;
+	private IconMenu menu;
 	public CommandCollege(UCSCPluginMain p) {
 		plugin = p;
+		menu = new IconMenu("College Choice Menu", 18, new IconMenu.OptionClickEventHandler() {
+            @Override
+            public void onOptionClick(IconMenu.OptionClickEvent event) {
+            	event.getPlayer().performCommand("college set "+event.getPosition());
+            }
+        }, plugin);
+		Material[] choiceMaterials = new Material[]{Material.COBBLESTONE, Material.BRICK, Material.GOLD_BLOCK, 
+				Material.ICE, Material.ANVIL, Material.NETHERRACK, Material.QUARTZ_BLOCK, Material.WOOL, 
+				Material.LEAVES, Material.LOG};
+		for(int i=0; i<10; i++) {
+			menu.setOption(i, new ItemStack(choiceMaterials[i]), collegeNameByIndex(i));
+		}
 	}
 
 	@Override
@@ -27,7 +42,7 @@ public class CommandCollege implements CommandExecutor {
 			// If there's nothing specified, just echo back the player's college name
 			int collegeIndex = plugin.playerDataHelper.getInt(player.getName(), "college");
 			if(collegeIndex == -1) {
-				player.sendMessage(ChatColor.AQUA+"You're currently not associated with any college. Use /college set");
+				player.sendMessage(ChatColor.AQUA+"You're currently not associated with any college. Use /college set or /collge choose.");
 				return false;
 			} else {
 				player.sendMessage(ChatColor.GREEN+"You are affiliated with "+collegeNameByIndex(collegeIndex)+"!");
@@ -35,6 +50,7 @@ public class CommandCollege implements CommandExecutor {
 			}
 		}
 		if(args[0].equals("set")) {
+			
 			if(args.length >= 2) {
 				String collegeName = args[1];
 				String playerName = player.getName();
@@ -52,6 +68,12 @@ public class CommandCollege implements CommandExecutor {
 				sender.sendMessage(ChatColor.AQUA+"/college set {college index}");
 				return false;
 			}
+		} else if(args[0].equals("choose")){
+			// Makes a GUI pop up where the user can choose.
+			menu.open(player);
+			player.sendMessage(ChatColor.AQUA+"Choose wisely!");
+			return true;
+			
 		} else {
 			return false;
 		}
