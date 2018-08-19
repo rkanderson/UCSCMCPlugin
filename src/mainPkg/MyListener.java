@@ -1,7 +1,10 @@
 package mainPkg;
 
 import org.bukkit.CropState;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.TreeType;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -11,6 +14,8 @@ import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.SlimeSplitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -62,9 +67,38 @@ public class MyListener implements Listener {
 					bs.update();
 				}
 			}
-			
 		}
 	}
+	
+	@EventHandler
+	public void onEntityDeath(EntityDeathEvent event)
+	{
+		Entity e = event.getEntity();
+		if(e.getLastDamageCause() instanceof EntityDamageByEntityEvent)
+		{
+			EntityDamageByEntityEvent nEvent = (EntityDamageByEntityEvent) e.getLastDamageCause();
+			if(nEvent.getDamager() instanceof Player)
+			{
+				Player p = (Player)nEvent.getDamager();
+				if(plugin.playerDataHelper.getInt(p.getName(), "college") == 9) {
+					// OAKES
+					p.sendMessage(ChatColor.BOLD+"oAKES!");
+					e.getLocation().getWorld().strikeLightning(e.getLocation());
+					Drone d = new Drone(e.getLocation());
+					d.changeY(-1);
+					World world = e.getWorld();
+					Block base = world.getBlockAt(d.loc);
+					Material baseType = null;
+					if(base.getType() != Material.GRASS) {
+						baseType = base.getType();
+						base.setType(Material.GRASS);
+					}
+					e.getLocation().getWorld().generateTree(e.getLocation(), TreeType.DARK_OAK);
+					if(baseType != null) d.setBlockAtLoc(baseType);
+				}
+            }
+         }
+      }
 	
 //	@EventHandler
 //	public void onSlimeSplit(SlimeSplitEvent event) {
