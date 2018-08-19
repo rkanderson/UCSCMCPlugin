@@ -84,6 +84,7 @@ public class CommandCollege implements CommandExecutor {
 				ItemStack[] pack = PackCreator.getPack(collegeIndex);
 				for(ItemStack stack: pack) player.getInventory().addItem(stack);
 				player.sendMessage(ChatColor.AQUA+"ENjoy!");
+				return true;
 			}
 		} else {
 			return false;
