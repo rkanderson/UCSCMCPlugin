@@ -46,6 +46,7 @@ public class PlayerDataHelper {
 			jsonString += sc.nextLine();
 		}
 		sc.close();
+		if(jsonString.equals("")) jsonString = "{}";
 		dataObj = new JsonParser().parse(jsonString).getAsJsonObject();
 	}
 	
@@ -54,7 +55,7 @@ public class PlayerDataHelper {
 		PrintWriter writer;
 		try {
 			writer = new PrintWriter(dataFile);
-			writer.print(dataObj.getAsString());
+			writer.print(dataObj.toString().equals("") ? "{}" : dataObj.toString());
 			writer.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -75,5 +76,20 @@ public class PlayerDataHelper {
 		if(playerData.has(prop)) return playerData.get(prop);
 		else return null;
 		
+	}
+	
+	public String getString(String playerName, String prop) {
+		JsonElement element = getProperty(playerName, prop);
+		return element.getAsString();
+	}
+	
+	public int getInt(String playerName, String prop) {
+		JsonElement element = getProperty(playerName, prop);
+		try {
+			int i = element.getAsInt();
+			return i;
+		} catch(NullPointerException e) {
+			return -1;
+		}
 	}
 }

@@ -12,3 +12,6 @@ commands:
     usage: "/test3"
   test4:
     usage: "/test4"
+  college:
+    usage: "/college help"
+    description: "Does stuff related to your college affiliation."

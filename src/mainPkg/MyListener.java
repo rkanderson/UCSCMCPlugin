@@ -1,8 +1,14 @@
 package mainPkg;
 
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.SlimeSplitEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,10 +31,28 @@ public class MyListener implements Listener {
             player.sendMessage("You are awesome!");
         } else {
             player.sendMessage("You are not awesome...");
-        }
-        
-        
-        
+        }  
         
     }
+	
+//	@EventHandler
+//	public void onSlimeSplit(SlimeSplitEvent event) {
+//		System.out.println("Slime split event");
+//		Slime slime = event.getEntity();
+//		slime.getLocation().getWorld().spawnEntity(slime.getLocation(), EntityType.COW);
+//	}
+//	
+//	@EventHandler
+//	public void onBlockBreak(BlockBreakEvent e) {
+//		System.out.println("Block broken");
+//	}
+//	
+//	@EventHandler
+//	public void onEntityDeath(EntityDeathEvent e) {
+//		if(e.getEntityType() == EntityType.ZOMBIE) {
+//			e.getEntity().getLocation().getWorld().spawnEntity(e.getEntity().getLocation(), EntityType.ZOMBIE);
+//			e.getEntity().getLocation().getWorld().spawnEntity(e.getEntity().getLocation(), EntityType.ZOMBIE);
+//		}
+//		
+//	}
 }
