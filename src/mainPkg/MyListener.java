@@ -82,10 +82,11 @@ public class MyListener implements Listener {
 			// Kresge: Right click with blaze powder in hand = dankMode
 			EquipmentSlot slot = e.getHand();
 			if(slot.equals(EquipmentSlot.HAND)) {
-				if(e.getItem().getType() == Material.BLAZE_POWDER) {
+				if(e.getItem().getType() == Material.BLAZE_POWDER && !plugin.playerDataHelper.getBoolean(p.getName(), "is_dank_mode")) {
 					plugin.playerDataHelper.setProperty(p.getName(), "is_dank_mode", new JsonPrimitive(true));
 					plugin.playerDataHelper.setProperty(p.getName(), "dank_mode_timestamp", new JsonPrimitive(System.currentTimeMillis()));
 					p.sendMessage(""+ChatColor.DARK_GREEN+ChatColor.BOLD+ChatColor.ITALIC+"DANK MODE ACTIVATED");
+					e.getItem().setAmount(e.getItem().getAmount()-1);
 				}
 			}
 		}

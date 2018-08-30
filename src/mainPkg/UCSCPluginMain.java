@@ -67,13 +67,16 @@ public class UCSCPluginMain extends JavaPlugin {
     			long dankModeTimestamp = playerDataHelper.getLong(p.getName(), "dank_mode_timestamp");
     			long secondsSinceTimestamp = (System.currentTimeMillis() - dankModeTimestamp) / 1000;
     			if(isDankMode) {
-	    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20, 4));
+    				// Must work on balancing
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20, 5));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 20, 4));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 20, 3));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20, 3));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 20, 0));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 20, 2));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 5));
     			}
     			if(dankModeTimestamp != -1 && secondsSinceTimestamp >= 10) {
