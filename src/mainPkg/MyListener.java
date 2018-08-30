@@ -85,6 +85,7 @@ public class MyListener implements Listener {
 				if(e.getItem().getType() == Material.BLAZE_POWDER) {
 					plugin.playerDataHelper.setProperty(p.getName(), "is_dank_mode", new JsonPrimitive(true));
 					plugin.playerDataHelper.setProperty(p.getName(), "dank_mode_timestamp", new JsonPrimitive(System.currentTimeMillis()));
+					p.sendMessage(""+ChatColor.DARK_GREEN+ChatColor.BOLD+ChatColor.ITALIC+"DANK MODE ACTIVATED");
 				}
 			}
 		}
