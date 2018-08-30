@@ -19,10 +19,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.SlimeSplitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.Crops;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.google.gson.JsonPrimitive;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -40,12 +43,20 @@ public class MyListener implements Listener {
     {
         event.setJoinMessage("Welcome, " + event.getPlayer().getName() + "!");
         Player player = event.getPlayer();
-
-        if (UCSCPluginMain.config.getBoolean("youAreAwesome")) {
-            player.sendMessage("You are awesome!");
-        } else {
-            player.sendMessage("You are not awesome...");
-        }  
+        String niceMessage = UCSCPluginMain.config.getString("niceMessage");
+        String meanMessage = UCSCPluginMain.config.getString("meanMessage");
+        if(Math.random() > 0.5)
+        {
+        	player.sendMessage(niceMessage);
+        }else{
+        	player.sendMessage(meanMessage);
+        }
+        
+//        if (UCSCPluginMain.config.getBoolean("youAreAwesome")) {
+//            player.sendMessage("You are awesome!");
+//        } else {
+//            player.sendMessage("You are not awesome...");
+//        }  
         
     }
 	
@@ -65,6 +76,15 @@ public class MyListener implements Listener {
 					BlockState bs = target.getState();
 					bs.setData(new Crops(CropState.RIPE));
 					bs.update();
+				}
+			}
+		} else if(collegeIndex == 6) {
+			// Kresge: Right click with blaze powder in hand = dankMode
+			EquipmentSlot slot = e.getHand();
+			if(slot.equals(EquipmentSlot.HAND)) {
+				if(e.getItem().getType() == Material.BLAZE_POWDER) {
+					plugin.playerDataHelper.setProperty(p.getName(), "is_dank_mode", new JsonPrimitive(true));
+					plugin.playerDataHelper.setProperty(p.getName(), "dank_mode_timestamp", new JsonPrimitive(System.currentTimeMillis()));
 				}
 			}
 		}
@@ -115,7 +135,6 @@ public class MyListener implements Listener {
             }
          }
       }
-	
 //	@EventHandler
 //	public void onSlimeSplit(SlimeSplitEvent event) {
 //		System.out.println("Slime split event");

@@ -5,6 +5,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 public class UCSCPluginMain extends JavaPlugin {
 	public static FileConfiguration config;
 	public PlayerDataHelper playerDataHelper;
@@ -32,7 +35,7 @@ public class UCSCPluginMain extends JavaPlugin {
             public void run() {
             	updateStates();
             }
-        }, 0L, 100L);
+        }, 0L, 20L);
     }
     
     // Fired when plugin is disabled.
@@ -47,6 +50,7 @@ public class UCSCPluginMain extends JavaPlugin {
     	
     	// TODO add potion effects for all the colleges!!!
     	for(Player p: getServer().getOnlinePlayers()){
+    		p.setWalkSpeed(0.2F);
     		int collegeIndex = playerDataHelper.getInt(p.getName(), "college");
     		if(collegeIndex==0) { //Stevenson
     			p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 1));
@@ -58,6 +62,24 @@ public class UCSCPluginMain extends JavaPlugin {
     			p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 200, 1));
     		} else if(collegeIndex == 4 || collegeIndex == 5) { // 9/10
     			p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 200, 1));
+    		} else if(collegeIndex == 6) {
+    			boolean isDankMode = playerDataHelper.getBoolean(p.getName(), "is_dank_mode");
+    			long dankModeTimestamp = playerDataHelper.getLong(p.getName(), "dank_mode_timestamp");
+    			long secondsSinceTimestamp = (System.currentTimeMillis() - dankModeTimestamp) / 1000;
+    			if(isDankMode) {
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20, 4));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20, 4));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 20, 4));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 4));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20, 4));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20, 3));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 20, 0));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 5));
+    			}
+    			if(dankModeTimestamp != -1 && secondsSinceTimestamp >= 10) {
+    				playerDataHelper.setProperty(p.getName(), "is_dank_mode", new JsonPrimitive(false));
+    			}
+    			
     		}
     	}
     }

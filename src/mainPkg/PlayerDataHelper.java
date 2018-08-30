@@ -62,6 +62,10 @@ public class PlayerDataHelper {
 		}
 	}
 	
+	public JsonObject getData() {
+		return dataObj;
+	}
+	
 	public void setProperty(String playerName, String prop, JsonElement value) {
 		if(!dataObj.has(playerName)) dataObj.add(playerName, new JsonObject());
 		JsonObject playerData = (JsonObject)dataObj.get(playerName);
@@ -78,11 +82,13 @@ public class PlayerDataHelper {
 		
 	}
 	
+	// @return null if no prop exists
 	public String getString(String playerName, String prop) {
 		JsonElement element = getProperty(playerName, prop);
 		return element.getAsString();
 	}
 	
+	// @return -1 if no prop exists
 	public int getInt(String playerName, String prop) {
 		JsonElement element = getProperty(playerName, prop);
 		try {
@@ -90,6 +96,28 @@ public class PlayerDataHelper {
 			return i;
 		} catch(NullPointerException e) {
 			return -1;
+		}
+	}
+	
+	// @return -1 if no prop exists
+	public long getLong(String playerName, String prop) {
+		JsonElement element = getProperty(playerName, prop);
+		try {
+			long i = element.getAsLong();
+			return i;
+		} catch(NullPointerException e) {
+			return -1;
+		}
+	}
+	
+	// @return true if no prop exists
+	public boolean getBoolean(String playerName, String prop) {
+		JsonElement element = getProperty(playerName, prop);
+		try {
+			boolean i = element.getAsBoolean();
+			return i;
+		} catch(NullPointerException e) {
+			return false;
 		}
 	}
 }
