@@ -71,7 +71,7 @@ public class UCSCPluginMain extends JavaPlugin {
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20, 5));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 20, 4));
-	    			p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 20, 3));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 20, 0));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20, 3));

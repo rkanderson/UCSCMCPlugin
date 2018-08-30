@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -81,7 +82,7 @@ public class MyListener implements Listener {
 		} else if(collegeIndex == 6) {
 			// Kresge: Right click with blaze powder in hand = dankMode
 			EquipmentSlot slot = e.getHand();
-			if(slot.equals(EquipmentSlot.HAND)) {
+			if(slot.equals(EquipmentSlot.HAND) && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 				if(e.getItem().getType() == Material.BLAZE_POWDER && !plugin.playerDataHelper.getBoolean(p.getName(), "is_dank_mode")) {
 					plugin.playerDataHelper.setProperty(p.getName(), "is_dank_mode", new JsonPrimitive(true));
 					plugin.playerDataHelper.setProperty(p.getName(), "dank_mode_timestamp", new JsonPrimitive(System.currentTimeMillis()));
