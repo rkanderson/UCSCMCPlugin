@@ -24,6 +24,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.SlimeSplitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -187,6 +188,19 @@ public class MyListener implements Listener {
 	}
 	
 	@EventHandler
+	public void onEntityDamage(EntityDamageEvent ev) {
+		Entity en = ev.getEntity();
+		if(en instanceof Player) {
+			Player p = (Player)en;
+			int collegeIndex = plugin.playerDataHelper.getInt(p.getName(), "college");
+			if(collegeIndex == 3 && ev.getCause() == DamageCause.POISON) {
+				// Merill, nullify poison effects
+				ev.setCancelled(true);
+			}
+		}
+	}
+	
+	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event)
 	{
 		Entity e = event.getEntity();
@@ -233,6 +247,8 @@ public class MyListener implements Listener {
             }
          }
       }
+	
+	
 //	@EventHandler
 //	public void onSlimeSplit(SlimeSplitEvent event) {
 //		System.out.println("Slime split event");
