@@ -36,6 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
 
 import com.google.gson.JsonPrimitive;
 
@@ -194,10 +195,30 @@ public class MyListener implements Listener {
 			Player p = (Player)en;
 			int collegeIndex = plugin.playerDataHelper.getInt(p.getName(), "college");
 			if(collegeIndex == 3 && ev.getCause() == DamageCause.POISON) {
-				// Merill, nullify poison effects
+				// Merril, nullify poison effects
 				ev.setCancelled(true);
 			}
+		} else if(ev.getCause() == DamageCause.ENTITY_ATTACK) {
+			EntityDamageByEntityEvent nEvent = (EntityDamageByEntityEvent) en.getLastDamageCause();
+			Entity damagerEntity = nEvent.getDamager();
+			if(damagerEntity instanceof Player) {
+				Player damagerPlayer = (Player)damagerEntity;
+				int collegeIndex = plugin.playerDataHelper.getInt(damagerPlayer.getName(), "college");
+				if(collegeIndex == 3 && damagerPlayer.getItemInHand().getType() == Material.AIR) {
+					// Merril: High knockback with fist
+					double vx = en.getLocation().getX()-damagerPlayer.getLocation().getX();
+					double vz = en.getLocation().getZ()-damagerPlayer.getLocation().getZ();
+					en.setVelocity(getVelocity(vx, vz, 5));
+				}
+			}
 		}
+		
+	}
+
+	private Vector getVelocity(double x, double z, double speed) {
+	    double y = 0.3333; // this way, like normal knockback, it hits a player a little bit up
+	    double multiplier = Math.sqrt((speed*speed) / (x*x + y*y + z*z)); // get a constant that, when multiplied by the vector, results in the speed we want
+	    return new Vector(x, y, z).multiply(multiplier).setY(y);
 	}
 	
 	@EventHandler
