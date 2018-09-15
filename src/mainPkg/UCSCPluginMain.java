@@ -68,7 +68,7 @@ public class UCSCPluginMain extends JavaPlugin {
     			long secondsSinceTimestamp = (System.currentTimeMillis() - dankModeTimestamp) / 1000;
     			if(isDankMode) {
     				// Must work on balancing
-	    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20, 5));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20, 8));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 20, 0));

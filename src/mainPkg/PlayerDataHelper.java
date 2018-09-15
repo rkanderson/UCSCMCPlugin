@@ -66,7 +66,7 @@ public class PlayerDataHelper {
 		return dataObj;
 	}
 	
-	public void setProperty(String playerName, String prop, JsonElement value) {
+	public synchronized void setProperty(String playerName, String prop, JsonElement value) {
 		if(!dataObj.has(playerName)) dataObj.add(playerName, new JsonObject());
 		JsonObject playerData = (JsonObject)dataObj.get(playerName);
 		if(playerData.has(prop)) playerData.remove(prop);

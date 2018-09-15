@@ -15,6 +15,9 @@ import net.md_5.bungee.api.ChatColor;
 public class CommandCollege implements CommandExecutor {
 	private UCSCPluginMain plugin;
 	private IconMenu menu;
+	private String helpMessage =""+ChatColor.GREEN+"/college set {college name or index}\n"+
+								""+ChatColor.GREEN+"/college choose "+ChatColor.AQUA+"Gives you a UI for choosing.\n"+
+								""+ChatColor.GREEN+"/college pack "+ChatColor.AQUA+"Gives you a pack for your college.";
 	public CommandCollege(UCSCPluginMain p) {
 		plugin = p;
 		menu = new IconMenu("College Choice Menu", 18, new IconMenu.OptionClickEventHandler() {
@@ -49,7 +52,10 @@ public class CommandCollege implements CommandExecutor {
 				return true;
 			}
 		}
-		if(args[0].equals("set")) {
+		if(args[0].equals("help")) {
+			player.sendMessage(helpMessage);
+			return true;
+		} else if(args[0].equals("set")) {
 			
 			if(args.length >= 2) {
 				String collegeName = args[1];
@@ -74,7 +80,7 @@ public class CommandCollege implements CommandExecutor {
 			player.sendMessage(ChatColor.AQUA+"Choose wisely!");
 			return true;
 			
-		} else if(args[0].equals("pack")){
+		} else if(args[0].equals("pack") || args[0].equals("kit")){
 			//TODO check for a cooldown timer.
 			int collegeIndex = plugin.playerDataHelper.getInt(player.getName(), "college");
 			if(collegeIndex == -1) {

@@ -1,6 +1,12 @@
 package mainPkg;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Color;
 import org.bukkit.CropState;
+import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
@@ -9,6 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
@@ -25,6 +32,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.Crops;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BlockIterator;
 
 import com.google.gson.JsonPrimitive;
 
@@ -65,13 +75,15 @@ public class MyListener implements Listener {
 	public void onPlayerClick(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		int collegeIndex = plugin.playerDataHelper.getInt(p.getName(), "college");
-		
+		System.out.println("Marker 0");
+		Block target = p.getTargetBlock(null, 5);
+		System.out.println("Marker 0.5");
+
 		// Rachel Carson makes crops grow if you right click on seeds with a stick in your hand.
 		// TODO add limit + cooldown
 		if(collegeIndex == 8 && p.getItemInHand().getType() == Material.STICK) {
 			EquipmentSlot slot = e.getHand();
 			if(slot.equals(EquipmentSlot.HAND)) {
-				Block target = p.getTargetBlock(null, 5);
 				if(target.getType() == Material.CROPS) {
 					p.sendMessage(ChatColor.AQUA+"Let it Grow!");
 					BlockState bs = target.getState();
@@ -90,6 +102,87 @@ public class MyListener implements Listener {
 					e.getItem().setAmount(e.getItem().getAmount()-1);
 				}
 			}
+		} else if(collegeIndex == 7) {
+			//Porter: Right click on a block of wool with dye can change the color
+
+			// *We only give a shait about the main hand
+			EquipmentSlot slot = e.getHand();
+			if(!slot.equals(EquipmentSlot.HAND)) return;
+			
+			if(e.getAction() == Action.RIGHT_CLICK_BLOCK && 
+					e.getItem().getType() == Material.INK_SACK &&
+					target.getType() == Material.WOOL) {
+				// Note that ink sack can be any kind of dye
+				byte dyeData = e.getItem().getData().getData();
+				byte wd = (byte)(15 - dyeData); //Target wool data
+				target.setData(wd);
+			} else if((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && 
+					e.getItem().getType() == Material.INK_SACK) {
+				// If clicking somewhere else with the dye, it applies a buff on the player
+				byte dyeData = e.getItem().getData().getData();
+				if(!(dyeData == 1 || dyeData == 2 || dyeData == 4 || dyeData == 11)) return; // Do nothing if the dyes aren't magical
+				Player targetPlayer; // The porter player might be targeting another player to apply the buff.
+									// If there is no player targeted, the target player becomes the porter player.
+				Entity playerViewing = getPlayerTargetEntity(p, 5);
+
+				if(playerViewing != null && playerViewing instanceof Player) targetPlayer = (Player)playerViewing;
+				else targetPlayer = p;
+
+				
+				// Do nothing if the target already has a buff on.
+				System.out.println("before: "+plugin.playerDataHelper.getBoolean(targetPlayer.getName(), "porter-buff-on"));
+				if(plugin.playerDataHelper.getBoolean(targetPlayer.getName(), "porter-buff-on")) {
+					p.sendMessage(ChatColor.RED+"Wait for the previous buff to end before applying a new one.");
+					return;
+				}
+				
+				//Craft a special potion effect based on the dye data. Also decide on color for particle effect.
+				PotionEffect potionEffect;
+				Effect pEffect; //Particles
+				int buffDuration = 200; //in ticks
+				switch(dyeData) {
+				case 1: //Red
+					potionEffect = new PotionEffect(PotionEffectType.HEAL, 1, 1);
+					p.sendMessage(""+ChatColor.BOLD+ChatColor.RED+"*Fast Heal*");
+					pEffect = Effect.HEART;
+					break;
+				case 2: //Green
+					potionEffect = new PotionEffect(PotionEffectType.ABSORPTION, buffDuration, 2);
+					p.sendMessage(""+ChatColor.BOLD+ChatColor.GREEN+"*ABSORPTION*");
+					pEffect = Effect.VILLAGER_PLANT_GROW;
+					break;
+				case 4: // Blue
+					potionEffect = new PotionEffect(PotionEffectType.JUMP, buffDuration, 6);
+					p.sendMessage(""+ChatColor.BOLD+ChatColor.BLUE+"*JUMP*");
+					pEffect = Effect.WATERDRIP;
+					break;
+				case 11: // Yellow
+					potionEffect = new PotionEffect(PotionEffectType.SPEED, buffDuration, 3);
+					p.sendMessage(""+ChatColor.BOLD+ChatColor.YELLOW+"*SPEED*");
+					pEffect = Effect.SPELL;
+					break;
+				default: // <--This shouldn't trigger.
+					potionEffect = new PotionEffect(PotionEffectType.GLOWING, 2, 0);
+					pEffect = Effect.BAT_TAKEOFF; //BATMAN
+				}
+				
+				
+				//Apply the potion effect
+				targetPlayer.addPotionEffect(potionEffect);
+				for(int i=0;i<10;i++)targetPlayer.playEffect(targetPlayer.getLocation(), pEffect, 0); //Erm this just sorta kinda works
+				// Must set porter-buff-on to true to prevent simultaneous buffs on any given plater
+				plugin.playerDataHelper.setProperty(targetPlayer.getName(), "porter-buff-on", new JsonPrimitive(true));
+				System.out.println("porter buff on set to true");
+				// Another thread should set this property back to false after buffDuration (converted to millisenconds)
+				System.out.println("Spawning new thread.");
+				new Thread(new SetPlayerPropertyAfterDuration(targetPlayer, "porter-buff-on", 
+						new JsonPrimitive(false), buffDuration / 20 * 1000)).start();
+				
+				// Finally subtract one from the stack
+				e.getItem().setAmount(e.getItem().getAmount()-1);
+				System.out.println("New Thread Spawned");
+				
+			}
 		}
 	}
 	
@@ -103,8 +196,10 @@ public class MyListener implements Listener {
 			if(nEvent.getDamager() instanceof Player)
 			{
 				Player p = (Player)nEvent.getDamager();
-				if(plugin.playerDataHelper.getInt(p.getName(), "college") == 9 && Math.random()>0.6 &&
+				if(plugin.playerDataHelper.getInt(p.getName(), "college") == 9 && Math.random()>0.9 &&
 						(p.getItemInHand().getType() == Material.STONE_AXE ||
+						p.getItemInHand().getType() == Material.WOOD_AXE ||
+						p.getItemInHand().getType() == Material.GOLD_AXE ||
 						p.getItemInHand().getType() == Material.IRON_AXE ||
 						p.getItemInHand().getType() == Material.DIAMOND_AXE)) {
 					// OAKES
@@ -158,4 +253,68 @@ public class MyListener implements Listener {
 //		}
 //		
 //	}
+	private class SetPlayerPropertyAfterDuration implements Runnable {
+		private long durationMillis;
+		private Player player;
+		private String propName;
+		private JsonPrimitive value;
+		public SetPlayerPropertyAfterDuration(Player p, String propName, JsonPrimitive val, long dur) {
+			durationMillis = dur;
+			player = p;
+			this.propName = propName;
+			value = val;
+		}
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(durationMillis);
+				System.out.println("New thread is waiting");
+			} catch (InterruptedException e) {
+				System.out.println("MyListener: The Thread couldn't sleep!!!");
+			}
+			plugin.playerDataHelper.setProperty(player.getName(), propName, value);
+			System.out.println("prop "+propName+" set to "+value+" for player "+player.getName());
+		}
+	}
+	
+	public Entity getPlayerTargetEntity(Player player, int range) {
+        List<Entity> nearbyE = player.getNearbyEntities(range,
+                range, range);
+        ArrayList<LivingEntity> livingE = new ArrayList<LivingEntity>();
+
+        for (Entity e : nearbyE) {
+            if (e instanceof LivingEntity) {
+                livingE.add((LivingEntity) e);
+            }
+        }
+
+        Entity target = null;
+        BlockIterator bItr = new BlockIterator(player, range);
+        Block block;
+        Location loc;
+        int bx, by, bz;
+        double ex, ey, ez;
+        // loop through player's line of sight
+        while (bItr.hasNext()) {
+                block = bItr.next();
+                bx = block.getX();
+                by = block.getY();
+                bz = block.getZ();
+                        // check for entities near this block in the line of sight
+                        for (LivingEntity e : livingE) {
+                                loc = e.getLocation();
+                                ex = loc.getX();
+                                ey = loc.getY();
+                                ez = loc.getZ();
+                                if ((bx-.75 <= ex && ex <= bx+1.75) && (bz-.75 <= ez && ez <= bz+1.75) && (by-1 <= ey && ey <= by+2.5)) {
+                                        // entity is close enough, set target and stop
+                                        target = e;
+                                        break;
+                                }
+                        }
+                }
+        return target;
+
+      }
+	
 }
