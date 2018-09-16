@@ -17,6 +17,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,15 +27,19 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.entity.SlimeSplitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.Crops;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
@@ -77,9 +82,7 @@ public class MyListener implements Listener {
 	public void onPlayerClick(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		int collegeIndex = plugin.playerDataHelper.getInt(p.getName(), "college");
-		System.out.println("Marker 0");
 		Block target = p.getTargetBlock(null, 5);
-		System.out.println("Marker 0.5");
 
 		// Rachel Carson makes crops grow if you right click on seeds with a stick in your hand.
 		// TODO add limit + cooldown
@@ -198,22 +201,44 @@ public class MyListener implements Listener {
 				// Merril, nullify poison effects
 				ev.setCancelled(true);
 			}
-		} else if(ev.getCause() == DamageCause.ENTITY_ATTACK) {
-			EntityDamageByEntityEvent nEvent = (EntityDamageByEntityEvent) en.getLastDamageCause();
+		} else if(ev instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent nEvent = (EntityDamageByEntityEvent) ev;
 			Entity damagerEntity = nEvent.getDamager();
 			if(damagerEntity instanceof Player) {
+
 				Player damagerPlayer = (Player)damagerEntity;
 				int collegeIndex = plugin.playerDataHelper.getInt(damagerPlayer.getName(), "college");
-				if(collegeIndex == 3 && damagerPlayer.getItemInHand().getType() == Material.AIR) {
+
+				if(collegeIndex == 3 && damagerPlayer.getItemInHand() == null || damagerPlayer.getItemInHand().getType() == Material.AIR) {
 					// Merril: High knockback with fist
 					double vx = en.getLocation().getX()-damagerPlayer.getLocation().getX();
 					double vz = en.getLocation().getZ()-damagerPlayer.getLocation().getZ();
 					en.setVelocity(getVelocity(vx, vz, 5));
+
 				}
+
 			}
 		}
 		
 	}
+	
+	@EventHandler
+	public void onProjectileHit(ProjectileHitEvent ev) {
+		System.out.println("marker 1");
+		Projectile proj = ev.getEntity();
+		ProjectileSource src = proj.getShooter();
+		if(proj.getType() == EntityType.ARROW && src instanceof Player) {
+			System.out.println("marker 2");
+			Player launcher = (Player)src;
+			int launcherCollegeIndex = plugin.playerDataHelper.getInt(launcher.getName(), "college");
+			if(launcherCollegeIndex == 2 && ev.getHitEntity() != null && Math.random() > 0.7) {
+				System.out.println("marker 3");
+				//Crown: Summon lightning arrow
+				proj.getLocation().getWorld().strikeLightning(proj.getLocation());
+			}
+		}
+	}
+	
 
 	private Vector getVelocity(double x, double z, double speed) {
 	    double y = 0.3333; // this way, like normal knockback, it hits a player a little bit up
