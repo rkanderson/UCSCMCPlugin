@@ -61,21 +61,21 @@ public class UCSCPluginMain extends JavaPlugin {
     		} else if(collegeIndex==2) { //Crown
     			p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 200, 1));
     		} else if(collegeIndex == 4 || collegeIndex == 5) { // 9/10
-    			p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 200, 1));
+    			p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 200, 0));
     		} else if(collegeIndex == 6) {
     			boolean isDankMode = playerDataHelper.getBoolean(p.getName(), "is_dank_mode");
     			long dankModeTimestamp = playerDataHelper.getLong(p.getName(), "dank_mode_timestamp");
     			long secondsSinceTimestamp = (System.currentTimeMillis() - dankModeTimestamp) / 1000;
     			if(isDankMode) {
     				// Must work on balancing
-	    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20, 8));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 20, 0));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20, 4));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20, 3));
-	    			p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 20, 0));
+	    			p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 20, 2));
 	    			p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 5));
     			}

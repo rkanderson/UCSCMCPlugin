@@ -15,7 +15,9 @@ import net.md_5.bungee.api.ChatColor;
 public class CommandCollege implements CommandExecutor {
 	private UCSCPluginMain plugin;
 	private IconMenu menu;
-	private String helpMessage =""+ChatColor.GREEN+"/college set {college name or index}\n"+
+	private String helpMessage = ""+ChatColor.GREEN+"/college "+ChatColor.AQUA+"Tells you your current college.\n"+
+								""+ChatColor.GREEN+"/college desc "+ChatColor.AQUA+"Gives you a description of the traits and abilities for your college.\n"+
+								""+ChatColor.GREEN+"/college set {college name or index}\n"+
 								""+ChatColor.GREEN+"/college choose "+ChatColor.AQUA+"Gives you a UI for choosing.\n"+
 								""+ChatColor.GREEN+"/college pack "+ChatColor.AQUA+"Gives you a pack for your college.";
 	public CommandCollege(UCSCPluginMain p) {
@@ -41,9 +43,10 @@ public class CommandCollege implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player)sender;
+		int collegeIndex = plugin.playerDataHelper.getInt(player.getName(), "college");
+
 		if(args.length == 0) {
 			// If there's nothing specified, just echo back the player's college name
-			int collegeIndex = plugin.playerDataHelper.getInt(player.getName(), "college");
 			if(collegeIndex == -1) {
 				player.sendMessage(ChatColor.AQUA+"You're currently not associated with any college. Use /college set or /collge choose.");
 				return false;
@@ -54,6 +57,9 @@ public class CommandCollege implements CommandExecutor {
 		}
 		if(args[0].equals("help")) {
 			player.sendMessage(helpMessage);
+			return true;
+		} else if(args[0].equals("desc")){
+			player.sendMessage(CollegeDescriptions.getDesc(collegeIndex));
 			return true;
 		} else if(args[0].equals("set")) {
 			
@@ -82,7 +88,6 @@ public class CommandCollege implements CommandExecutor {
 			
 		} else if(args[0].equals("pack") || args[0].equals("kit")){
 			//TODO check for a cooldown timer.
-			int collegeIndex = plugin.playerDataHelper.getInt(player.getName(), "college");
 			if(collegeIndex == -1) {
 				player.sendMessage(ChatColor.AQUA+"You don't seem to be affiliated with any college yet. Use /college choose first.");
 				return false;

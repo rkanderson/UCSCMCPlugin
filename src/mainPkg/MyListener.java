@@ -35,6 +35,7 @@ import org.bukkit.event.entity.SlimeSplitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Crops;
@@ -218,6 +219,14 @@ public class MyListener implements Listener {
 					double vz = en.getLocation().getZ()-damagerPlayer.getLocation().getZ();
 					en.setVelocity(getVelocity(vx, vz, 5));
 
+				} else if(collegeIndex == 8 && damagerPlayer.getItemInHand() != null) {
+					// Rachel carson can deal absurd amounts of damage with a carrot
+					if(damagerPlayer.getItemInHand().getType() == Material.CARROT_ITEM)
+						((Damageable)(en)).damage(12); 
+					else if(damagerPlayer.getItemInHand().getType() == Material.GOLDEN_CARROT) {
+						((Damageable)(en)).damage(100);
+						damagerPlayer.getItemInHand().setAmount(damagerPlayer.getItemInHand().getAmount()-1);
+					}
 				}
 
 			}
@@ -237,7 +246,7 @@ public class MyListener implements Listener {
 			if(launcherCollegeIndex == 2 && ev.getHitEntity() != null && ev.getHitEntity() instanceof Damageable) {
 				System.out.println("marker 3");
 				//Crown: Summon lightning arrow (RNG) and give the player back an arrow
-				if(Math.random() > 0.2) {
+				if(Math.random() > 0.7) {
 					proj.getLocation().getWorld().strikeLightningEffect(ev.getHitEntity().getLocation());
 					((Damageable) ev.getHitEntity()).damage(10, launcher);
 				}
@@ -291,17 +300,34 @@ public class MyListener implements Listener {
 					if(baseType != null) d.setBlockAtLoc(baseType);
 					
 					// Light all the nearby mobs on fire.
-					for(Entity ent: world.getNearbyEntities(e.getLocation(), 7, 5, 5)) {
+					for(Entity ent: world.getNearbyEntities(e.getLocation(), 7, 10, 10)) {
 						if(ent.getType() != EntityType.PLAYER && 
 								ent.getType() != EntityType.WOLF && 
 								ent.getType() != EntityType.OCELOT) {
 							ent.setFireTicks(200);
+							if(ent instanceof Damageable)((Damageable)ent).damage(10);
 						}
 					}
 				}
             }
          }
       }
+	
+	@EventHandler
+	public void onPlayerToggleSneak(PlayerToggleSneakEvent ev) {
+		boolean isSneak = ev.isSneaking();
+		Player p = ev.getPlayer();
+		int collegeIndex = plugin.playerDataHelper.getInt(p.getName(), "college");
+		if(collegeIndex == 4 || collegeIndex == 5) {
+			//college 9 or 10
+			// hide when sneaking
+			if(isSneak)
+				p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
+			else
+				p.removePotionEffect(PotionEffectType.INVISIBILITY);
+			
+		}
+	}
 	
 	
 //	@EventHandler
@@ -324,6 +350,8 @@ public class MyListener implements Listener {
 //		}
 //		
 //	}
+	
+	//Helpers
 	private class SetPlayerPropertyAfterDuration implements Runnable {
 		private long durationMillis;
 		private Player player;

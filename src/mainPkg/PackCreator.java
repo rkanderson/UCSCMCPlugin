@@ -6,7 +6,6 @@ import org.bukkit.inventory.ItemStack;
 public class PackCreator {
 
 	public static ItemStack[] getPack(int collegeIndex) {
-		// TODO matt can u do this por favor?
 		/*
 		 * To know what college index refers to, start on east side of campus with stevenson and
 		 * make your way counter clockwise to oakes.
@@ -14,9 +13,6 @@ public class PackCreator {
 		 * 4 = c9, 5=c10, 6=kresge, 7=porter, 8=rachel carson, 9=oakes. 
 		 */
 		switch(collegeIndex) {
-			//TODO return an item pack for each college. 
-		    //	Already did a little smthing for oakes. U can change.
-			// Probably good to copy and paste new ItemStack(...)
 		case 0: //Stevenson
 			return new ItemStack[]{
 					new ItemStack(Material.IRON_SWORD, 1),
@@ -127,7 +123,7 @@ public class PackCreator {
 			return new ItemStack[]{
 					new ItemStack(Material.STICK, 1),
 					new ItemStack(Material.DIAMOND_HOE, 1),
-					new ItemStack(Material.GOLD_SWORD, 1),
+					new ItemStack(Material.CARROT_ITEM, 1),
 					new ItemStack(Material.STONE_PICKAXE, 1),
 					new ItemStack(Material.STONE_SPADE, 1),
 					new ItemStack(Material.STONE_AXE, 1),
