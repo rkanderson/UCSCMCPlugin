@@ -37,7 +37,8 @@ public class PackCreator {
 			};
 		case 2: //Crown
 			return new ItemStack[]{
-					new ItemStack(Material.STONE_SWORD, 1),
+					new ItemStack(Material.BOW, 1),
+					new ItemStack(Material.ARROW, 32),
 					new ItemStack(Material.STONE_HOE, 1),
 					new ItemStack(Material.STONE_PICKAXE, 1),
 					new ItemStack(Material.STONE_SPADE, 1),

@@ -3,6 +3,7 @@ package mainPkg;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.CropState;
 import org.bukkit.Effect;
@@ -13,6 +14,7 @@ import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -34,6 +36,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Crops;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -231,10 +234,16 @@ public class MyListener implements Listener {
 			System.out.println("marker 2");
 			Player launcher = (Player)src;
 			int launcherCollegeIndex = plugin.playerDataHelper.getInt(launcher.getName(), "college");
-			if(launcherCollegeIndex == 2 && ev.getHitEntity() != null && Math.random() > 0.7) {
+			if(launcherCollegeIndex == 2 && ev.getHitEntity() != null && ev.getHitEntity() instanceof Damageable) {
 				System.out.println("marker 3");
-				//Crown: Summon lightning arrow
-				proj.getLocation().getWorld().strikeLightning(proj.getLocation());
+				//Crown: Summon lightning arrow (RNG) and give the player back an arrow
+				if(Math.random() > 0.2) {
+					proj.getLocation().getWorld().strikeLightningEffect(ev.getHitEntity().getLocation());
+					((Damageable) ev.getHitEntity()).damage(10, launcher);
+				}
+				
+				launcher.getInventory().addItem(new ItemStack(Material.ARROW, 1));
+				
 			}
 		}
 	}
