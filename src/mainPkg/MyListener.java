@@ -1,5 +1,6 @@
 package mainPkg;
 
+import java.rmi.server.Skeleton;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +19,12 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.WitherSkeleton;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -67,7 +71,7 @@ public class MyListener implements Listener {
         Player player = event.getPlayer();
         String niceMessage = UCSCPluginMain.config.getString("niceMessage");
         String meanMessage = UCSCPluginMain.config.getString("meanMessage");
-        if(Math.random() > 0.5)
+        if(Math.random() > 0.01)
         {
         	player.sendMessage(niceMessage);
         }else{
@@ -213,7 +217,7 @@ public class MyListener implements Listener {
 				Player damagerPlayer = (Player)damagerEntity;
 				int collegeIndex = plugin.playerDataHelper.getInt(damagerPlayer.getName(), "college");
 
-				if(collegeIndex == 3 && damagerPlayer.getItemInHand() == null || damagerPlayer.getItemInHand().getType() == Material.AIR) {
+				if(collegeIndex == 3 && damagerPlayer.getItemInHand().getType() == Material.AIR) {
 					// Merril: High knockback with fist
 					double vx = en.getLocation().getX()-damagerPlayer.getLocation().getX();
 					double vz = en.getLocation().getZ()-damagerPlayer.getLocation().getZ();
@@ -274,6 +278,28 @@ public class MyListener implements Listener {
 			if(nEvent.getDamager() instanceof Player)
 			{
 				Player p = (Player)nEvent.getDamager();
+				int amt; double prob;
+				
+				if(e instanceof PigZombie){
+					amt = ((int)(Math.random()*100)+60);
+					prob = 0.2;
+				} else if(e instanceof WitherSkeleton) {
+					amt = ((int)(Math.random()*100)+200);
+					prob = 0.8;
+				} else if(e instanceof Zombie || e instanceof Skeleton) {
+					amt = ((int)(Math.random()*20)+1);
+					prob = 0.4;
+				} else {
+					amt = 0;
+					prob = 0;
+				}
+				// Give some money maybe
+				if(Math.random() < prob) {
+					plugin.getEcononomy().depositPlayer(p, amt);
+					p.sendMessage(ChatColor.ITALIC+e.getName()+" dropped $"+amt);
+				}
+				
+				// The OAKES ability
 				if(plugin.playerDataHelper.getInt(p.getName(), "college") == 9 && Math.random()>0.9 &&
 						(p.getItemInHand().getType() == Material.STONE_AXE ||
 						p.getItemInHand().getType() == Material.WOOD_AXE ||
@@ -282,7 +308,7 @@ public class MyListener implements Listener {
 						p.getItemInHand().getType() == Material.DIAMOND_AXE)) {
 					// OAKES
 					p.sendMessage(ChatColor.BOLD+"OAKES!");
-					e.getLocation().getWorld().strikeLightning(e.getLocation());
+					e.getLocation().getWorld().strikeLightningEffect(e.getLocation());
 					
 					// Move the drone down to temporarily make a grass block if needed.
 					// After the tree is grown, the block is replaced to be what it originally was.

@@ -1,6 +1,8 @@
 package mainPkg;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -8,9 +10,17 @@ import org.bukkit.potion.PotionEffectType;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
+
 public class UCSCPluginMain extends JavaPlugin {
 	public static FileConfiguration config;
 	public PlayerDataHelper playerDataHelper;
+	private Economy econ;
+    private Permission perms;
+    private Chat chat;
+    
 	// Fired when plugin is first enabled
     @Override
     public void onEnable() {
@@ -27,7 +37,6 @@ public class UCSCPluginMain extends JavaPlugin {
     	this.getCommand("test3").setExecutor(new CommandTest());
     	this.getCommand("test4").setExecutor(new CommandTest());
     	this.getCommand("college").setExecutor(new CommandCollege(this));
-    	
         getServer().getPluginManager().registerEvents(new MyListener(this), this);
         
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -36,12 +45,57 @@ public class UCSCPluginMain extends JavaPlugin {
             	updateStates();
             }
         }, 0L, 20L);
+        
+        if (!setupEconomy()) {
+            this.getLogger().severe("Disabled due to no Vault dependency found!");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+        this.setupPermissions();
+        //this.setupChat();
     }
     
     // Fired when plugin is disabled.
     @Override
     public void onDisable() {
 
+    }
+    
+    private boolean setupEconomy() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+    }
+
+    private boolean setupChat() {
+        RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
+        chat = rsp.getProvider();	
+        return chat != null;
+    }
+
+    private boolean setupPermissions() {
+        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        perms = rsp.getProvider();
+        return perms != null;
+    }
+
+    public Economy getEcononomy() {
+        return econ;
+    }
+
+    public Permission getPermissions() {
+        return perms;
+    }
+
+    public Chat getChat() {
+        return chat;
     }
     
     // Can handle anything that requires frequent checking.
